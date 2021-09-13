@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-w(m=ym82qy#y7y2(-80@$#i&8*c$xlo^=!d63)@6!gk-_m3*mj
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "ec2-13-124-57-131.ap-northeast-2.compute.amazonaws.com"
+    ".ap-northeast-2.compute.amazonaws.com"
 ]
 
 
@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'main',
     'post',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,3 +135,9 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
