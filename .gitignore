@@ -285,3 +285,4 @@ $RECYCLE.BIN/
 *.lnk
 
 ec2-greenlink
+config.py
