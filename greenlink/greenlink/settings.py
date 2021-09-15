@@ -36,7 +36,6 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'main',
-    'dbtest',
     'rest_framework',
     'corsheaders',
 
