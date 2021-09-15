@@ -122,7 +122,7 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class MainMain(models.Model):
+class Main(models.Model):
     id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
