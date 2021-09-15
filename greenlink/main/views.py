@@ -11,3 +11,6 @@ class ListMain(generics.ListCreateAPIView):
 class DetailMain(generics.RetrieveUpdateDestroyAPIView):
     queryset = Main.objects.all()
     serializer_class = MainSerializer
+
+def index(request):
+    return render(request, "main/index.html")
