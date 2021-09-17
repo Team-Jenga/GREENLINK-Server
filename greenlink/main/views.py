@@ -48,7 +48,9 @@ class SignUp(View):
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
                 return JsonResponse({"message" : "Already Exists"}, status = 409)
-            
+            if Member.objects.filter(member_nickname = data['member_nickname']).exists():
+                return JsonResponse({"message" : "Nickname Exists"}, status = 409) 
+          
             Member.objects.create(
                 member_id = data['member_id'],
                 member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
@@ -65,7 +67,7 @@ class SignUp(View):
                 member_user_num_of_family = data['member_user_num_of_family']
             ).save()
 
-            return HttpResponse({"message" : "Success !"},status = 200)
+            return JsonResponse({"message" : "Success"},status = 200)
 
         except json.JSONDecodeError as e :
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
