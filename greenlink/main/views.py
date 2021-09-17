@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
-from django.views.decorators.csrf import csrf_protect
 
 from .models import Member, MemberAdmin, MemberUser
 from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer
@@ -39,10 +39,7 @@ def index(request):
     return render(request, "main/index.html")
 
 class SignUp(View):
-<<<<<<< HEAD
-    @csrf_protect
-=======
->>>>>>> 4a9daf8e9cee2fd236449a3757e24dd875062f33
+    @csrf_exempt
     def post(self, request):
         data = json.loads(request.body)
 
@@ -61,8 +58,4 @@ class SignUp(View):
             return HttpResponse(status = 200)
         
         except KeyError:
-<<<<<<< HEAD
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-=======
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
->>>>>>> 4a9daf8e9cee2fd236449a3757e24dd875062f33
