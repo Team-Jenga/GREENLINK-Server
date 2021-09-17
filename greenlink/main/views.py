@@ -1,16 +1,16 @@
 from django.shortcuts import render
 from rest_framework import generics
 
-from .models import Main
-from .serializers import MainSerializer
+from .models import Member
+from .serializers import MemberSerializer
 
-class ListMain(generics.ListCreateAPIView):
-    queryset = Main.objects.all()
-    serializer_class = MainSerializer
+class ListMember(generics.ListCreateAPIView):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
 
-class DetailMain(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Main.objects.all()
-    serializer_class = MainSerializer
+class DetailMember(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
 
 def index(request):
     return render(request, "main/index.html")
