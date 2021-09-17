@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import SignUp
+from .views import SignUp, SignIn
 
 urlpatterns = [
     path('member/', views.ListMember.as_view()),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('admin/<int:pk>/', views.DetailAdmin.as_view()),
 
     path('signup', SignUp.as_view()),
+    path('signin', SignIn.as_view()),
 ]

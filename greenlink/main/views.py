@@ -8,6 +8,7 @@ from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSeri
 
 import json
 import bcrypt
+import jwt
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
@@ -46,7 +47,7 @@ class SignUp(View):
 
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
-                return JsonResponse({"message" : "Already Exists"}, status=409)
+                return JsonResponse({"message" : "Already Exists"}, status = 409)
             
             Member.objects.create(
                 member_id = data['member_id'],
@@ -55,11 +56,40 @@ class SignUp(View):
                 member_nickname = data['member_nickname'],
                 member_auth = data['member_auth']
             ).save()
+            MemberUser.objects.create(
+                member_id = data['member_id'],
+                member_user_birth = data['member_user_birth'],
+                member_user_phone = data['member_user_phone'],
+                member_user_email = data['member_user_email'],
+                member_user_location = data['member_user_location'],
+                member_user_num_of_family = data['member_user_num_of_family']
+            ).save()
 
             return HttpResponse(status = 200)
-            
+
         except json.JSONDecodeError as e :
-            return JsonResponse({'MESSAGE': f'Json_ERROR:{e}'}, status=400)
+            return JsonResponse({'MESSAGE': f'Json_ERROR:{e}'}, status = 400)
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+
+class SignIn(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            if Member.objects.filter(member_id = data['member_id']).exists():
+                user = Member.objects.get(member_id = data['member_id'])
+
+                if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.password.encode('UTF-8')):
+                    token = jwt.encode({'user' : user.id}, SECRET_KEY, algorithm = 'HS256').decode('UTF-8')
+
+                    return JsonResponse({"message" : "로그인 성공"}, {'token' : token}, status=200)
+
+                return JsonResponse({"message" : "Wrong Password"}, status = 400)
+
+            return JsonResponse({"message" : "Unexist ID"}, status = 400)
+
+        except KeyError:
+            JsonResponse({"message" : "Invalid Value"}, status = 400)
