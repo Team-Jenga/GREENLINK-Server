@@ -10,7 +10,7 @@ from django.db import models
 
 class Event(models.Model):
     event_id = models.IntegerField(primary_key=True)
-    member = models.OneToOneField('Member', models.DO_NOTHING)
+    member = models.OneToOneField('MemberAdmin', models.DO_NOTHING)
     event_title = models.CharField(max_length=45)
     event_location = models.CharField(max_length=45)
     event_reporting_date = models.DateField()
