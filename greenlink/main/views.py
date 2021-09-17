@@ -83,7 +83,7 @@ class SignIn(View):
                 user = Member.objects.get(member_id = data['member_id'])
 
                 if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.member_pw.encode('UTF-8')):
-                    token = jwt.encode({'user' : user.member_id}, SECRET_KEY, algorithm = 'HS256').decode('UTF-8')
+                    token = jwt.JWT().encode({'user' : user.member_id}, SECRET_KEY, algorithm = 'HS256').decode('UTF-8')
 
                     return JsonResponse({"message" : "Success !"}, {'token' : token}, status=200)
 
