@@ -5,9 +5,11 @@ cryptography==3.4.8
 Django==3.2.7
 django-cors-headers==3.8.0
 djangorestframework==3.12.4
+djangorestframework-jwt==1.11.0
 jwt==1.2.0
 mysqlclient==2.0.3
 pycparser==2.20
+PyJWT==1.7.1
 pytz==2021.1
 six==1.16.0
 sqlparse==0.4.2
