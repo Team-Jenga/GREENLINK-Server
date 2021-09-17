@@ -1,14 +1,5 @@
 from rest_framework import serializers
-from .models import Main
-
-class MainSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            'id',
-            'title',
-            'content',
-        )
-        model = Main
+from .models import Event, EventDetail, Favorite, Member, MemberAdmin, MemberUser
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +9,7 @@ class MemberSerializer(serializers.ModelSerializer):
             'member_name',
             'member_nickname',
         )
-        model = Main
+        model = Member
 
 class MemberAdminSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +17,7 @@ class MemberAdminSerializer(serializers.ModelSerializer):
             'member_id',
             'member_admin_position',
         )
-        model = Main
+        model = MemberAdmin
 
 class MemberUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,4 +29,37 @@ class MemberUserSerializer(serializers.ModelSerializer):
             'member_user_location',
             'member_user_number_of_family',
         )
-        model = Main
+        model = MemberUser
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'event_id',
+            'member_id',
+            'event_title',
+            'event_location',
+            'event_reporting_date',
+            'event_views',
+        )
+        model = Event
+
+class EventDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'event_id',
+            'event_management',
+            'event_period_start',
+            'event_period_end',
+            'event_url',
+            'event_image_url',
+        )
+        model = EventDetail
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'favorite_id',
+            'member_id',
+            'event_id',
+        )
+        model = Favorite
