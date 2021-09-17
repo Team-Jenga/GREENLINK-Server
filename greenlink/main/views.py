@@ -65,10 +65,10 @@ class SignUp(View):
                 member_user_num_of_family = data['member_user_num_of_family']
             ).save()
 
-            return HttpResponse(status = 200)
+            return HttpResponse({"message" : "회원가입 성공"},status = 200)
 
         except json.JSONDecodeError as e :
-            return JsonResponse({'MESSAGE': f'Json_ERROR:{e}'}, status = 400)
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
