@@ -52,7 +52,7 @@ class SignUp(View):
                 member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
                 member_name = data['member_name'],
                 member_nickname = data['member_nickname'],
-                member_auth = 'user'
+                member_auth = data['member_auth']
             ).save()
 
             return HttpResponse(status = 200)
