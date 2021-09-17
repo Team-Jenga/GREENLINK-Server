@@ -53,6 +53,7 @@ class EventDetailSerializer(serializers.ModelSerializer):
             'event_period_end',
             'event_url',
             'event_image_url',
+            'event_content',
         )
         model = EventDetail
 
