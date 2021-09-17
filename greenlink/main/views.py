@@ -57,6 +57,9 @@ class SignUp(View):
             ).save()
 
             return HttpResponse(status = 200)
-        
+            
+        except json.JSONDecodeError as e :
+            return JsonResponse({'MESSAGE': f'Json_ERROR:{e}'}, status=400)
+
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)

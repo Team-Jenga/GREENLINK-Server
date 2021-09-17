@@ -50,7 +50,7 @@ class Member(models.Model):
     member_pw = models.CharField(max_length=45)
     member_name = models.CharField(max_length=45)
     member_nickname = models.CharField(unique=True, max_length=45)
-    member_auth = models.CharField(unique=True, max_length=45)
+    member_auth = models.CharField(max_length=45)
 
     class Meta:
         managed = False
