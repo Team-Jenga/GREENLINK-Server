@@ -96,6 +96,7 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+            
 class EventList(View):
     def get(self, request):
         event = Event.objects.all()
