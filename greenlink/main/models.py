@@ -47,7 +47,7 @@ class Favorite(models.Model):
 
 class Member(models.Model):
     member_id = models.CharField(primary_key=True, max_length=45)
-    member_pw = models.CharField(max_length=45)
+    member_pw = models.TextField()
     member_name = models.CharField(max_length=45)
     member_nickname = models.CharField(unique=True, max_length=45)
     member_auth = models.CharField(max_length=45)
