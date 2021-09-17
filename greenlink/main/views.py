@@ -39,7 +39,10 @@ def index(request):
     return render(request, "main/index.html")
 
 class SignUp(View):
+<<<<<<< HEAD
     @csrf_protect
+=======
+>>>>>>> 4a9daf8e9cee2fd236449a3757e24dd875062f33
     def post(self, request):
         data = json.loads(request.body)
 
@@ -58,4 +61,8 @@ class SignUp(View):
             return HttpResponse(status = 200)
         
         except KeyError:
+<<<<<<< HEAD
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
+=======
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+>>>>>>> 4a9daf8e9cee2fd236449a3757e24dd875062f33
