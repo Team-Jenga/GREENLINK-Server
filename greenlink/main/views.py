@@ -49,7 +49,7 @@ class SignUp(View):
             
             Member.objects.create(
                 member_id = data['member_id'],
-                member_pw = bcrypt.hashpw(data['member_pw'].encode('UTF-8'), bcrypt.gensalt().decode('UTF-8')),
+                member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
                 member_name = data['member_name'],
                 member_nickname = data['member_nickname'],
                 member_auth = 'user'
