@@ -28,7 +28,7 @@ class MemberUserSerializer(serializers.ModelSerializer):
             'member_user_phone',
             'member_user_email',
             'member_user_location',
-            'member_user_number_of_family',
+            'member_user_num_of_family',
         )
         model = MemberUser
 
