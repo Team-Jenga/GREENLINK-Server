@@ -8,6 +8,7 @@ class MemberSerializer(serializers.ModelSerializer):
             'member_pw',
             'member_name',
             'member_nickname',
+            'member_auth',
         )
         model = Member
 
