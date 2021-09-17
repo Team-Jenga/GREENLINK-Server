@@ -65,7 +65,7 @@ class SignUp(View):
                 member_user_num_of_family = data['member_user_num_of_family']
             ).save()
 
-            return HttpResponse({"message" : "회원가입 성공"},status = 200)
+            return HttpResponse({"message" : "Success !"},status = 200)
 
         except json.JSONDecodeError as e :
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
@@ -85,7 +85,7 @@ class SignIn(View):
                 if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.password.encode('UTF-8')):
                     token = jwt.encode({'user' : user.id}, SECRET_KEY, algorithm = 'HS256').decode('UTF-8')
 
-                    return JsonResponse({"message" : "로그인 성공"}, {'token' : token}, status=200)
+                    return JsonResponse({"message" : "Success !"}, {'token' : token}, status=200)
 
                 return JsonResponse({"message" : "Wrong Password"}, status = 400)
 
