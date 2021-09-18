@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, EventDetail, Favorite, Member, MemberAdmin, MemberUser
+from .models import Event, EventDetail, Favorite, Member, MemberAdmin, MemberUser, Notice
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,3 +65,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
             'event_id',
         )
         model = Favorite
+
+class NoticeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'notice_id', 
+            'notice_title', 
+            'notice_content', 
+            'member', 
+            'notice_views', 
+            'notice_reporting_date',
+        )
+        model = Notice

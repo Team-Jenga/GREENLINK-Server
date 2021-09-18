@@ -79,3 +79,16 @@ class MemberUser(models.Model):
         db_table = 'member_user'
 
 
+class Notice(models.Model):
+    notice_id = models.AutoField(primary_key=True)
+    notice_title = models.CharField(max_length=200)
+    notice_content = models.TextField()
+    member = models.ForeignKey(Member, models.DO_NOTHING)
+    notice_views = models.IntegerField()
+    notice_reporting_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'notice'
+
+
