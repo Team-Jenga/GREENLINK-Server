@@ -53,7 +53,9 @@ class SignUp(View):
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
                 return JsonResponse({"message" : "Already Exists"}, status = 409)
-            
+            if Member.objects.filter(member_nickname = data['member_nickname']).exists():
+                return JsonResponse({"message" : "Nickname Exists"}, status = 409) 
+          
             Member.objects.create(
                 member_id = data['member_id'],
                 member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
@@ -70,7 +72,7 @@ class SignUp(View):
                 member_user_num_of_family = data['member_user_num_of_family']
             ).save()
 
-            return HttpResponse({"message" : "Success !"},status = 200)
+            return JsonResponse({"message" : "Success"},status = 200)
 
         except json.JSONDecodeError as e :
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
@@ -90,7 +92,7 @@ class SignIn(View):
                 if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.member_pw.encode('UTF-8')):
                     token = jwt.encode({'member_id' : user.member_id}, SECRET_KEY, 'HS256').decode('UTF-8')
 
-                    return JsonResponse({"message" : "Success !"}, {'token' : token}, status=200)
+                    return JsonResponse({'token' : token}, status=200)
 
                 return JsonResponse({"message" : "Wrong Password"}, status = 400)
 
@@ -99,6 +101,7 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+            
 class EventList(View):
     def get(self, request):
         event = Event.objects.all()
