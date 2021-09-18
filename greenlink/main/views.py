@@ -1,10 +1,11 @@
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import generics
+from rest_framework import generics, serializers
 
-from .models import Member, MemberAdmin, MemberUser, Notice
+from .models import Member, MemberAdmin, MemberUser, Event, Notice
 from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, NoticeSerializer,NoticeDetailSerializer
+
 
 import json
 import bcrypt
@@ -96,7 +97,6 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-
 class ListNotice(generics.ListAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
@@ -104,3 +104,10 @@ class ListNotice(generics.ListAPIView):
 class DetailNotice(generics.RetrieveAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeDetailSerializer
+  
+class EventList(View):
+    def get(self, request):
+        event = Event.objects.all()
+        event_list = serializers.serialize('json',event)
+        
+        return HttpResponse(event_list, content_type = "text/json-comment-filtered", status = 200)
