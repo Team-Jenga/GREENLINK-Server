@@ -13,6 +13,8 @@ urlpatterns = [
     path('admin/', views.ListAdmin.as_view()),
     path('admin/<int:pk>/', views.DetailAdmin.as_view()),
 
+    path('eventlist', views.ListEvent.as_view()),
+
     path('signup', SignUp.as_view()),
     path('signin', SignIn.as_view()),
 

@@ -4,8 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, serializers
 
 from .models import Member, MemberAdmin, MemberUser, Event, Notice
-from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, NoticeSerializer,NoticeDetailSerializer
-
+from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, NoticeSerializer, NoticeDetailSerializer, EventSerializer
 
 import json
 import bcrypt
@@ -37,6 +36,11 @@ class ListAdmin(generics.ListCreateAPIView):
 class DetailAdmin(generics.RetrieveUpdateDestroyAPIView):
     queryset = MemberAdmin.objects.all()
     serializer_class = MemberAdminSerializer
+
+class ListEvent(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
 
 def index(request):
     return render(request, "main/index.html")
