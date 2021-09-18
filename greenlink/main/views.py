@@ -108,10 +108,3 @@ class ListNotice(generics.ListAPIView):
 class DetailNotice(generics.RetrieveAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeDetailSerializer
-  
-class EventList(View):
-    def get(self, request):
-        event = Event.objects.all()
-        event_list = serializers.serialize('json',event)
-        
-        return HttpResponse(event_list, content_type = "text/json-comment-filtered", status = 200)
