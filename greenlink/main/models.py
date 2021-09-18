@@ -80,15 +80,11 @@ class MemberUser(models.Model):
 
 
 class Notice(models.Model):
-    notice_id = models.AutoField(primary_key=True)
     notice_title = models.CharField(max_length=200)
     notice_content = models.TextField()
-    member = models.ForeignKey(Member, models.DO_NOTHING)
-    notice_views = models.IntegerField()
-    notice_reporting_date = models.DateTimeField(auto_now_add=True)
+    member = models.ForeignKey(MemberAdmin, null=True, blank=True, on_delete=models.CASCADE)
+    notice_views = models.IntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False
         db_table = 'notice'
-
-
