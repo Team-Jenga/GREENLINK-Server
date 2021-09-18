@@ -3,8 +3,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, serializers
 
-from .models import Member, MemberAdmin, MemberUser, Event
-from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer
+from .models import Member, MemberAdmin, MemberUser, Event, Notice
+from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, NoticeSerializer, NoticeDetailSerializer, EventSerializer
 
 import json
 import bcrypt
@@ -101,7 +101,14 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-            
+class ListNotice(generics.ListAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer
+
+class DetailNotice(generics.RetrieveAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeDetailSerializer
+  
 class EventList(View):
     def get(self, request):
         event = Event.objects.all()
