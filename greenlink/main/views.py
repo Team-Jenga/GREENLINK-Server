@@ -52,9 +52,9 @@ class SignUp(View):
 
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
-                return JsonResponse({"message" : "Already Exists"}, status = 409)
+                return JsonResponse({"message" : "Id Already Exists"}, status = 408)
             if Member.objects.filter(member_nickname = data['member_nickname']).exists():
-                return JsonResponse({"message" : "Nickname Exists"}, status = 409) 
+                return JsonResponse({"message" : "Nickname Aleady Exists"}, status = 409) 
           
             Member.objects.create(
                 member_id = data['member_id'],
@@ -63,14 +63,21 @@ class SignUp(View):
                 member_nickname = data['member_nickname'],
                 member_auth = data['member_auth']
             ).save()
-            MemberUser.objects.create(
-                member_id = data['member_id'],
-                member_user_birth = data['member_user_birth'],
-                member_user_phone = data['member_user_phone'],
-                member_user_email = data['member_user_email'],
-                member_user_location = data['member_user_location'],
-                member_user_num_of_family = data['member_user_num_of_family']
-            ).save()
+
+            if data['member_auth'] == 'user':
+                MemberUser.objects.create(
+                    member_id = data['member_id'],
+                    member_user_birth = data['member_user_birth'],
+                    member_user_phone = data['member_user_phone'],
+                    member_user_email = data['member_user_email'],
+                    member_user_location = data['member_user_location'],
+                    member_user_num_of_family = data['member_user_num_of_family']
+                ).save()
+            elif data['member_auth'] == 'admin':
+                MemberAdmin.objects.create(
+                    member_id = data['member_id'],
+                    member_admin_position = 1
+                ).save()
 
             return JsonResponse({"message" : "Success"},status = 200)
 
