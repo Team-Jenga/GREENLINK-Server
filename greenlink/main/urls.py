@@ -15,5 +15,7 @@ urlpatterns = [
 
     path('signup', SignUp.as_view()),
     path('signin', SignIn.as_view()),
-    path('notice', views.ListNotice.as_view()),
+
+    path('notice', views.ListNotice.as_view(), name='notice_list'),
+    path('notice/<int:pk>', views.DetailNotice.as_view(), name='notice_detail'),
 ]

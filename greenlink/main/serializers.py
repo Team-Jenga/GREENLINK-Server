@@ -71,6 +71,17 @@ class NoticeSerializer(serializers.ModelSerializer):
         fields = (
             'notice_id', 
             'notice_title', 
+            'member', 
+            'notice_views', 
+            'notice_reporting_date',
+        )
+        model = Notice
+
+class NoticeDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'notice_id', 
+            'notice_title', 
             'notice_content', 
             'member', 
             'notice_views', 
