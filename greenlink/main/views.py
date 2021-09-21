@@ -115,11 +115,3 @@ class ListNotice(generics.ListCreateAPIView):
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-
-# class WriteNotice(View):
-#     def post(self, request):
-#         data = json.loads(request.body)
-#         login_session = request.session.get('login_session','')
-        
-#         try:
-            
