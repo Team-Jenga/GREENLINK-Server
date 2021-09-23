@@ -36,7 +36,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'event_id',
-            'member_id',
+            'member',
             'event_title',
             'event_location',
             'event_reporting_date',
@@ -47,7 +47,7 @@ class EventSerializer(serializers.ModelSerializer):
 class EventDetailSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'event_id',
+            'event',
             'event_management',
             'event_period_start',
             'event_period_end',
