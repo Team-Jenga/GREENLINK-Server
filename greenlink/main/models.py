@@ -9,15 +9,17 @@ from django.db import models
 
 
 class Event(models.Model):
-    event_id = models.IntegerField(primary_key=True)
+    event_id = models.BigIntegerField(primary_key=True)
     member = models.OneToOneField('MemberAdmin', models.DO_NOTHING)
     event_title = models.CharField(max_length=45)
     event_location = models.CharField(max_length=45)
     event_reporting_date = models.DateField()
     event_views = models.IntegerField()
 
+    def __str__(self):
+            return self.event_title
+
     class Meta:
-        managed = False
         db_table = 'event'
 
 
@@ -30,8 +32,10 @@ class EventDetail(models.Model):
     event_image_url = models.CharField(max_length=45, blank=True, null=True)
     event_content = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+            return self.event
+
     class Meta:
-        managed = False
         db_table = 'event_detail'
 
 
