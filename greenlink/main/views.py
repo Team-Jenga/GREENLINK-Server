@@ -108,6 +108,37 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+class CheckDupleID(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            if Member.objects.filter(member_id = data['member_id']).exists():
+                return JsonResponse({"status": "200", "message" : "false"},status = 401)
+            else:
+                return JsonResponse({"status": "200", "message" : "true"},status = 200)  
+
+        except json.JSONDecodeError as e :
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+class CheckDupleNick(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            if Member.objects.filter(member_nickname = data['member_nickname']).exists():
+                return JsonResponse({"status": "200", "message" : "false"},status = 401)
+            else:
+                return JsonResponse({"status": "200", "message" : "true"},status = 200)  
+                
+
+        except json.JSONDecodeError as e :
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
 class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
