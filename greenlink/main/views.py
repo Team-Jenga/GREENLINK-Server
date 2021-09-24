@@ -1,3 +1,5 @@
+from django.db.models import query
+from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -146,3 +148,13 @@ class ListNotice(generics.ListCreateAPIView):
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
+
+
+    def get(self, request, *args, **kwargs):
+        item = Notice.objects.get(pk=kwargs['pk'])
+        item.notice_views += 1
+        item.save()
+
+        return super().get(request, *args, **kwargs)
+    
+    
