@@ -74,5 +74,6 @@ class NoticeSerializer(serializers.ModelSerializer):
             'notice_content', 
             'member', 
             'created_at',
+            'notice_views',
         )
         model = Notice
