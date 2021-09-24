@@ -70,8 +70,8 @@ class SignUp(View):
                     member_user_birth = data['member_user_birth'],
                     member_user_phone = data['member_user_phone'],
                     member_user_email = data['member_user_email'],
-                    member_user_location = data['member_user_location'],
-                    member_user_num_of_family = data['member_user_num_of_family']
+                    # member_user_location = data['member_user_location'],
+                    # member_user_num_of_family = data['member_user_num_of_family']
                 ).save()
             elif data['member_auth'] == 'admin':
                 MemberAdmin.objects.create(
