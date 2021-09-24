@@ -114,7 +114,7 @@ class CheckDupleID(View):
 
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
-                return JsonResponse({"status": "200", "message" : "false"},status = 401)
+                return JsonResponse({"status": "200", "message" : "false"},status = 200)
             else:
                 return JsonResponse({"status": "200", "message" : "true"},status = 200)  
 
@@ -129,7 +129,7 @@ class CheckDupleNick(View):
 
         try:
             if Member.objects.filter(member_nickname = data['member_nickname']).exists():
-                return JsonResponse({"status": "200", "message" : "false"},status = 401)
+                return JsonResponse({"status": "200", "message" : "false"},status = 200)
             else:
                 return JsonResponse({"status": "200", "message" : "true"},status = 200)  
                 
