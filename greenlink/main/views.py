@@ -115,4 +115,3 @@ class ListNotice(generics.ListCreateAPIView):
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-
