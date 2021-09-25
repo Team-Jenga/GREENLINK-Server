@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models import query
 from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
@@ -5,8 +6,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 
-from .models import Member, MemberAdmin, MemberUser, Event, Notice
-from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
+from .models import  EventDetail, Member, MemberAdmin, MemberUser, Event, Notice
+from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
 
 import json
 import bcrypt
@@ -42,6 +43,10 @@ class DetailAdmin(generics.RetrieveUpdateDestroyAPIView):
 class ListEvent(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EventDetail.objects.all()
+    serializer_class = EventDetailSerializer
 
 
 def index(request):
@@ -101,7 +106,7 @@ class SignIn(View):
                 if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.member_pw.encode('UTF-8')):
                     token = jwt.encode({'member_id' : user.member_id}, SECRET_KEY, 'HS256').decode('UTF-8')
 
-                    return JsonResponse({'token' : token}, status=200)
+                    return JsonResponse({'token' : token,'auth' : user.member_auth}, status=200)
 
                 return JsonResponse({"message" : "Wrong Password"}, status = 400)
 
@@ -145,16 +150,62 @@ class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
 
+    def get(self, request, *args, **kwargs):
+        cur = connection.cursor()
+
+        result = cur.execute("ALTER TABLE notice AUTO_INCREMENT=1")
+        result = cur.execute("SET @COUNT = 0")
+        result = cur.execute("UPDATE notice SET id = @COUNT:=@COUNT+1")
+        
+        queryset = cur.fetchall()
+
+        connection.commit()
+        connection.close()
+        return super().get(request, *args, **kwargs)
+      
+
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-
-
+    
     def get(self, request, *args, **kwargs):
         item = Notice.objects.get(pk=kwargs['pk'])
         item.notice_views += 1
         item.save()
 
         return super().get(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
     
     
+
+class CreateEvent(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            Event.objects.create(
+                member_id = data['member_id'],
+                event_title = data['event_title'],
+                event_location = data['event_location'],
+                event_views = 0
+            ).save()
+            
+            EventDetail.objects.create(
+                event = Event.objects.latest("event_id"),
+                event_management =  data['event_management'],
+                event_period_start =  data['event_period_start'],
+                event_period_end =  data['event_period_end'],
+                event_url = data['event_url'],
+                event_image_url =  data['event_image_url'],
+                event_content = data['event_content'],
+            ).save()
+
+            return JsonResponse({"message" : "Success"}, status = 200)
+
+        except json.JSONDecodeError as e :
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
