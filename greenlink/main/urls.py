@@ -24,4 +24,5 @@ urlpatterns = [
     path('notice/<int:pk>', views.DetailNotice.as_view()),
 
     path('event', views.ListEvent.as_view()),
+    path('create_event',views.CreateEvent.as_view())
 ]

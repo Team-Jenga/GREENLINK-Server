@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 
-from .models import Member, MemberAdmin, MemberUser, Event, Notice
+from .models import  EventDetail, Member, MemberAdmin, MemberUser, Event, Notice
 from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
 
 import json
@@ -158,12 +158,12 @@ class ListNotice(generics.ListCreateAPIView):
         connection.commit()
         connection.close()
         return super().get(request, *args, **kwargs)
+      
 
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-
-
+    
     def get(self, request, *args, **kwargs):
         item = Notice.objects.get(pk=kwargs['pk'])
         item.notice_views += 1
@@ -175,4 +175,33 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
         return super().delete(request, *args, **kwargs)
     
     
-    
+
+class CreateEvent(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            Event.objects.create(
+                member_id = data['member_id'],
+                event_title = data['event_title'],
+                event_location = data['event_location'],
+                event_views = 0
+            ).save()
+            
+            EventDetail.objects.create(
+                event = Event.objects.latest("event_id"),
+                event_management =  data['event_management'],
+                event_period_start =  data['event_period_start'],
+                event_period_end =  data['event_period_end'],
+                event_url = data['event_url'],
+                event_image_url =  data['event_image_url'],
+                event_content = data['event_content'],
+            ).save()
+
+            return JsonResponse({"message" : "Success"}, status = 200)
+
+        except json.JSONDecodeError as e :
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
