@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models import query
 from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
@@ -145,6 +146,20 @@ class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
 
+    def get(self, request, *args, **kwargs):
+        cur = connection.cursor()
+
+        result = cur.execute("ALTER TABLE notice AUTO_INCREMENT=1")
+        result = cur.execute("SET @COUNT = 0")
+        result = cur.execute("UPDATE notice SET id = @COUNT:=@COUNT+1")
+        
+        queryset = cur.fetchall()
+
+        connection.commit()
+        connection.close()
+        return super().get(request, *args, **kwargs)
+      
+
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
@@ -156,6 +171,10 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get(request, *args, **kwargs)
 
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+    
+    
 
 class CreateEvent(View):
     def post(self, request):
