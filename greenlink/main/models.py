@@ -8,47 +8,6 @@
 from django.db import models
 
 
-class Event(models.Model):
-    event_id = models.BigIntegerField(primary_key=True)
-    member = models.OneToOneField('MemberAdmin', models.DO_NOTHING)
-    event_title = models.CharField(max_length=45)
-    event_location = models.CharField(max_length=45)
-    event_reporting_date = models.DateField()
-    event_views = models.IntegerField()
-
-    def __str__(self):
-            return self.event_title
-
-    class Meta:
-        db_table = 'event'
-
-
-class EventDetail(models.Model):
-    event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
-    event_management = models.CharField(max_length=45, blank=True, null=True)
-    event_period_start = models.DateField(blank=True, null=True)
-    event_period_end = models.DateField(blank=True, null=True)
-    event_url = models.CharField(max_length=45, blank=True, null=True)
-    event_image_url = models.CharField(max_length=45, blank=True, null=True)
-    event_content = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-            return self.event
-
-    class Meta:
-        db_table = 'event_detail'
-
-
-class Favorite(models.Model):
-    favorite_id = models.IntegerField(primary_key=True)
-    member = models.ForeignKey('Member', models.DO_NOTHING)
-    event = models.ForeignKey(Event, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'favorite'
-
-
 class Member(models.Model):
     member_id = models.CharField(primary_key=True, max_length=45)
     member_pw = models.TextField()
@@ -90,6 +49,46 @@ class MemberUser(models.Model):
     class Meta:
         managed = False
         db_table = 'member_user'
+
+
+class Event(models.Model):
+    event_id = models.AutoField(primary_key=True)
+    member = models.OneToOneField(MemberAdmin, models.DO_NOTHING)
+    event_title = models.CharField(max_length=45)
+    event_location = models.CharField(max_length=45)
+    event_reporting_date = models.DateTimeField(auto_now_add=True)
+    event_views = models.IntegerField()
+
+    def __str__(self):
+            return self.event_title
+
+    class Meta:
+        db_table = 'event'
+
+
+class EventDetail(models.Model):
+    event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    event_management = models.CharField(max_length=45, blank=True, null=True)
+    event_period_start = models.DateField(blank=True, null=True)
+    event_period_end = models.DateField(blank=True, null=True)
+    event_url = models.CharField(max_length=45, blank=True, null=True)
+    event_image_url = models.CharField(max_length=45, blank=True, null=True)
+    event_content = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+            return self.event
+
+    class Meta:
+        db_table = 'event_detail'
+
+
+class Favorite(models.Model):
+    favorite_id = models.IntegerField(primary_key=True)
+    member = models.ForeignKey(Member, models.DO_NOTHING)
+    event = models.ForeignKey(Event, models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'favorite'
 
 
 class Notice(models.Model):
