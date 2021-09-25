@@ -28,7 +28,7 @@ class MemberAdmin(models.Model):
     member_admin_position = models.CharField(max_length=45)
 
     def __str__(self):
-        return self.member
+        return self.member.member_id
 
     class Meta:
         managed = False
@@ -44,7 +44,7 @@ class MemberUser(models.Model):
     member_user_num_of_family = models.CharField(max_length=45, blank=True, null=True)
 
     def __str__(self):
-        return self.member
+        return self.member.member_id
 
     class Meta:
         managed = False
@@ -76,7 +76,7 @@ class EventDetail(models.Model):
     event_content = models.TextField(blank=True, null=True)
 
     def __str__(self):
-            return self.event
+            return self.event.event_title
 
     class Meta:
         db_table = 'event_detail'
