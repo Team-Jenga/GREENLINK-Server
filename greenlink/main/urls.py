@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import CheckDupleID, CheckDupleNick, ListEvent, SendAuth, SignUp, SignIn
+from .views import CheckDupleID, CheckDupleNick, FindID, FindPW, ListEvent, SendAuth, SignUp, SignIn
 
 urlpatterns = [
     path('member/', views.ListMember.as_view()),
@@ -21,11 +21,12 @@ urlpatterns = [
     path('checkid', CheckDupleID.as_view()),
     path('checknick', CheckDupleNick.as_view()),
 
+    path('findid', FindID.as_view()),
+    path('findpw', FindPW.as_view()),
+
     path('notice', views.ListNotice.as_view()),
     path('notice/<int:pk>', views.DetailNotice.as_view()),
 
     path('event', views.ListEvent.as_view()),
-    path('event/<int:pk>/',views.DetailEvent.as_view()),
-    path('create_event',views.CreateEvent.as_view()),
-    path('modify_event/<int:pk>/',views.ModifyEvent.as_view())
+    path('event/<int:pk>/',views.DetailEvent.as_view())
 ]

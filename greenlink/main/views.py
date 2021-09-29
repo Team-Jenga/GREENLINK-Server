@@ -8,13 +8,13 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import  EventDetail, Member, MemberAdmin, MemberUser, Event, Notice
-from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
+from .models import Member, MemberAdmin, MemberUser, Event, Notice
+from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
 
 import json
 import bcrypt
 import jwt
-import random
+import random, secrets, string
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
@@ -48,9 +48,30 @@ class ListEvent(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def get(self, request, *args, **kwargs):
+        cur = connection.cursor()
+
+        cur.execute("ALTER TABLE event AUTO_INCREMENT=1")
+        cur.execute("SET @COUNT = 0")
+        cur.execute("UPDATE event SET event_id = @COUNT:=@COUNT+1")
+        
+        cur.fetchall()
+
+        connection.commit()
+        connection.close()
+
+        return super().get(request, *args, **kwargs)
+
 class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
-    queryset = EventDetail.objects.all()
-    serializer_class = EventDetailSerializer
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+    def get(self, request, *args, **kwargs):
+        item = Event.objects.get(pk=kwargs['pk'])
+        item.event_views += 1
+        item.save()
+
+        return super().get(request, *args, **kwargs)
 
 def index(request):
     return render(request, "main/index.html")
@@ -96,7 +117,7 @@ class SignUp(View):
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-        
+
 class SendAuth(APIView):
     def post(self, request):
         email = request.data['member_email']
@@ -164,6 +185,51 @@ class CheckDupleNick(View):
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+class FindID(APIView):
+    def post(self, request):
+        email = request.data['member_email']
+
+        try:
+            if MemberUser.objects.filter(member_user_email = email).exists():
+                member = MemberUser.objects.get(member_user_email = email)
+                return JsonResponse({"status": "200", "message" : str(member)}, status = 200)
+            else:
+                return JsonResponse({"status": "400", "message" : "email doesn't exist"}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+
+class FindPW(APIView):
+    def post(self, request):
+        member_id_ = request.data['member_id']
+
+        try:
+            if Member.objects.filter(member_id = member_id_).exists():
+                member_email = MemberUser.objects.get(member=member_id_).member_user_email
+
+                subject = 'Greenlink 회원님의 임시 비밀번호입니다.'
+                string_pool = string.ascii_letters + string.digits
+                while True:
+                    temp_password = ''.join(secrets.choice(string_pool) for i in range(10))
+                    if (any(c.islower() for c in temp_password)
+                    and any(c.isupper() for c in temp_password)
+                    and sum(c.isdigit() for c in temp_password) >= 3):
+                        break
+                message = str(temp_password)
+
+                Member.objects.filter(member_id = member_id_).update(
+                    member_pw = bcrypt.hashpw(message.encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
+                )
+
+                mail = EmailMessage(subject, message, to=[member_email])
+                mail.send()
+                return JsonResponse({"status": "200", "message" : 'Success'}, status = 200)
+            else:
+                return JsonResponse({"status": "400", "message" : "ID doesn't exist"}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+
 class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
@@ -194,60 +260,3 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
-class CreateEvent(View):
-    def post(self, request):
-        data = json.loads(request.body)
-
-        try:
-            Event.objects.create(
-                member_id = data['member_id'],
-                event_title = data['event_title'],
-                event_location = data['event_location'],
-                event_views = 0
-            ).save()
-            
-            EventDetail.objects.create(
-                event = Event.objects.latest("event_id"),
-                event_management =  data['event_management'],
-                event_period_start =  data['event_period_start'],
-                event_period_end =  data['event_period_end'],
-                event_url = data['event_url'],
-                event_image_url =  data['event_image_url'],
-                event_content = data['event_content'],
-            ).save()
-
-            return JsonResponse({"message" : "Success"}, status = 200)
-
-        except json.JSONDecodeError as e :
-            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
-
-        except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
-class ModifyEvent(View):
-    def put(self, request, **kwargs):
-        data = json.loads(request.body)
-        
-        try:
-            Event.objects.filter(event_id = kwargs['pk']).update(
-                event_title = data['event_title'],
-                event_location = data['event_location'],
-            )
-            EventDetail.objects.filter(event_id = kwargs['pk']).update(
-                event = Event.objects.latest("event_id"),
-                event_management =  data['event_management'],
-                event_period_start =  data['event_period_start'],
-                event_period_end =  data['event_period_end'],
-                event_url = data['event_url'],
-                event_image_url =  data['event_image_url'],
-                event_content = data['event_content'],
-            )
-
-            return JsonResponse({"message" : "Success"}, status = 200)
-
-        except json.JSONDecodeError as e :
-            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
-
-        except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)

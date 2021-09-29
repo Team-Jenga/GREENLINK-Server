@@ -28,8 +28,8 @@ SECRET_KEY = config.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".ap-northeast-2.compute.amazonaws.com"
-    #'127.0.0.1'
+    #".ap-northeast-2.compute.amazonaws.com"
+    '127.0.0.1'
 ]
 
 
@@ -129,13 +129,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
