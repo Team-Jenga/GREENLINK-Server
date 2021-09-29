@@ -55,7 +55,6 @@ class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
 def index(request):
     return render(request, "main/index.html")
 
-
 class SignUp(View):
     @csrf_exempt
     def post(self, request):
@@ -97,8 +96,7 @@ class SignUp(View):
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
-          
+        
 class SendAuth(APIView):
     def post(self, request):
         email = request.data['member_email']
@@ -114,7 +112,6 @@ class SendAuth(APIView):
 
         except KeyError:
             return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
-
 
 class SignIn(View):
     def post(self, request):
@@ -136,7 +133,6 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-
 class CheckDupleID(View):
     def post(self, request):
         data = json.loads(request.body)
@@ -151,7 +147,6 @@ class CheckDupleID(View):
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
 
 class CheckDupleNick(View):
     def post(self, request):
@@ -168,7 +163,6 @@ class CheckDupleNick(View):
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
 
 class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
