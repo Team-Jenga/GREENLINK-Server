@@ -20,6 +20,8 @@ from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
 from django.core.mail import EmailMessage
 
+from django.core import serializers
+
 class ListMember(generics.ListCreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
@@ -73,7 +75,19 @@ class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get(request, *args, **kwargs)
 
+class SearchEvent(APIView):
+    def get(self, request):
+        queryset = Event.objects.all()
+        
+        search_key = json.loads(request.body)['event_title'] # 검색어 가져오기
+        if search_key: # 만약 검색어가 존재하면
+            event_list = queryset.filter(event_title__icontains=search_key) # 해당 검색어를 포함한 queryset 가져오기
+            event_list=serializers.serialize('json',event_list)
 
+            return JsonResponse({'event_list': event_list}, status = 200)
+        else: 
+            return JsonResponse({'message' :'failed'}, status = 400)
+        
 def index(request):
     return render(request, "main/index.html")
 
