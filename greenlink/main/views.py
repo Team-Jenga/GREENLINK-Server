@@ -8,8 +8,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import  EventDetail, Member, MemberAdmin, MemberUser, Event, Notice
-from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
+from .models import Member, MemberAdmin, MemberUser, Event, Notice
+from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
 
 import json
 import bcrypt
@@ -50,7 +50,7 @@ class ListEvent(generics.ListCreateAPIView):
 
 class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
-    serializer_class = EventDetailSerializer
+    serializer_class = EventSerializer
 
 def index(request):
     return render(request, "main/index.html")

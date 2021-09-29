@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, EventDetail, Favorite, Member, MemberAdmin, MemberUser, Notice
+from .models import Event, Favorite, Member, MemberAdmin, MemberUser, Notice
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,21 +41,14 @@ class EventSerializer(serializers.ModelSerializer):
             'event_location',
             'event_reporting_date',
             'event_views',
-        )
-        model = Event
-
-class EventDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            'event',
             'event_management',
-            'event_period_start',
+            'event_period_start', 
             'event_period_end',
             'event_url',
             'event_image_url',
-            'event_content',
+            'event_content'
         )
-        model = EventDetail
+        model = Event
 
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
