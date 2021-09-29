@@ -53,7 +53,7 @@ class MemberUser(models.Model):
 
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
-    member = models.OneToOneField(MemberAdmin, models.DO_NOTHING)
+    member = models.ForeignKey(MemberAdmin, models.DO_NOTHING, blank=True, null=True)
     event_title = models.CharField(max_length=45)
     event_location = models.CharField(max_length=45)
     event_reporting_date = models.DateTimeField(auto_now_add=True)
