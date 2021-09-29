@@ -57,7 +57,7 @@ class Event(models.Model):
     event_title = models.CharField(max_length=45)
     event_location = models.CharField(max_length=45)
     event_reporting_date = models.DateTimeField(auto_now_add=True)
-    event_views = models.IntegerField()
+    event_views = models.IntegerField(default=1)
 
     def __str__(self):
             return self.event_title
