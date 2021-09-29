@@ -49,7 +49,7 @@ class ListEvent(generics.ListCreateAPIView):
     serializer_class = EventSerializer
 
 class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
-    queryset = EventDetail.objects.all()
+    queryset = Event.objects.all()
     serializer_class = EventDetailSerializer
 
 def index(request):
@@ -200,60 +200,3 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
-class CreateEvent(View):
-    def post(self, request):
-        data = json.loads(request.body)
-
-        try:
-            Event.objects.create(
-                member_id = data['member_id'],
-                event_title = data['event_title'],
-                event_location = data['event_location'],
-                event_views = 0
-            ).save()
-            
-            EventDetail.objects.create(
-                event = Event.objects.latest("event_id"),
-                event_management =  data['event_management'],
-                event_period_start =  data['event_period_start'],
-                event_period_end =  data['event_period_end'],
-                event_url = data['event_url'],
-                event_image_url =  data['event_image_url'],
-                event_content = data['event_content'],
-            ).save()
-
-            return JsonResponse({"message" : "Success"}, status = 200)
-
-        except json.JSONDecodeError as e :
-            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
-
-        except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
-class ModifyEvent(View):
-    def put(self, request, **kwargs):
-        data = json.loads(request.body)
-        
-        try:
-            Event.objects.filter(event_id = kwargs['pk']).update(
-                event_title = data['event_title'],
-                event_location = data['event_location'],
-            )
-            EventDetail.objects.filter(event_id = kwargs['pk']).update(
-                event = Event.objects.latest("event_id"),
-                event_management =  data['event_management'],
-                event_period_start =  data['event_period_start'],
-                event_period_end =  data['event_period_end'],
-                event_url = data['event_url'],
-                event_image_url =  data['event_image_url'],
-                event_content = data['event_content'],
-            )
-
-            return JsonResponse({"message" : "Success"}, status = 200)
-
-        except json.JSONDecodeError as e :
-            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
-
-        except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
