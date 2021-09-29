@@ -5,6 +5,8 @@ from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import  EventDetail, Member, MemberAdmin, MemberUser, Event, Notice
 from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
@@ -12,9 +14,11 @@ from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSer
 import json
 import bcrypt
 import jwt
+import random
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
+from django.core.mail import EmailMessage
 
 class ListMember(generics.ListCreateAPIView):
     queryset = Member.objects.all()
@@ -93,6 +97,24 @@ class SignUp(View):
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+          
+class SendAuth(APIView):
+    def post(self, request):
+        email = request.data['member_email']
+
+        try:
+            subject = 'Greenlink 회원가입 인증 안내 입니다.'
+            number = random.randrange(10000,100000)
+            message = str(number)
+            mail = EmailMessage(subject, message, to=[email])
+            mail.send()
+            
+            return JsonResponse({"status": "200", "message" : message}, status = 200)
+
+        except KeyError:
+            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+
 
 class SignIn(View):
     def post(self, request):
