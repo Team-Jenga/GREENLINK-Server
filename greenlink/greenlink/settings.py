@@ -28,8 +28,8 @@ SECRET_KEY = config.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".ap-northeast-2.compute.amazonaws.com"
-    #'127.0.0.1'
+    #".ap-northeast-2.compute.amazonaws.com"
+    '127.0.0.1'
 ]
 
 
@@ -96,6 +96,13 @@ WSGI_APPLICATION = 'greenlink.wsgi.application'
 # }
 DATABASES = config.DATABASES
 
+EMAIL_BACKEND = config.EMAIL['EMAIL_BACKEND']
+EMAIL_USE_TLS = config.EMAIL['EMAIL_USE_TLS']
+EMAIL_PORT = config.EMAIL['EMAIL_PORT']
+EMAIL_HOST = config.EMAIL['EMAIL_HOST']
+EMAIL_HOST_USER = config.EMAIL['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = config.EMAIL['EMAIL_HOST_PASSWORD']
+SERVER_EMAIL = config.EMAIL['SERVER_EMAIL']
 
 
 # Password validation
