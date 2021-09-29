@@ -132,7 +132,7 @@ class SignUp(View):
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-          
+
 class SendAuth(APIView):
     def post(self, request):
         email = request.data['member_email']
