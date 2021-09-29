@@ -98,6 +98,7 @@ class SignUp(View):
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+          
 class SendAuth(APIView):
     def post(self, request):
         email = request.data['member_email']
@@ -113,7 +114,6 @@ class SendAuth(APIView):
 
         except KeyError:
             return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
-
 
 
 class SignIn(View):
@@ -187,7 +187,6 @@ class ListNotice(generics.ListCreateAPIView):
         connection.close()
         return super().get(request, *args, **kwargs)
       
-
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
@@ -201,7 +200,6 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
     
 class CreateEvent(View):
     def post(self, request):
@@ -224,6 +222,33 @@ class CreateEvent(View):
                 event_image_url =  data['event_image_url'],
                 event_content = data['event_content'],
             ).save()
+
+            return JsonResponse({"message" : "Success"}, status = 200)
+
+        except json.JSONDecodeError as e :
+            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+class ModifyEvent(View):
+    def put(self, request, **kwargs):
+        data = json.loads(request.body)
+        
+        try:
+            Event.objects.filter(event_id = kwargs['pk']).update(
+                event_title = data['event_title'],
+                event_location = data['event_location'],
+            )
+            EventDetail.objects.filter(event_id = kwargs['pk']).update(
+                event = Event.objects.latest("event_id"),
+                event_management =  data['event_management'],
+                event_period_start =  data['event_period_start'],
+                event_period_end =  data['event_period_end'],
+                event_url = data['event_url'],
+                event_image_url =  data['event_image_url'],
+                event_content = data['event_content'],
+            )
 
             return JsonResponse({"message" : "Success"}, status = 200)
 
