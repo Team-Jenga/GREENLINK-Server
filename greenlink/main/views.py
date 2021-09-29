@@ -48,9 +48,31 @@ class ListEvent(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def get(self, request, *args, **kwargs):
+        cur = connection.cursor()
+
+        cur.execute("ALTER TABLE event AUTO_INCREMENT=1")
+        cur.execute("SET @COUNT = 0")
+        cur.execute("UPDATE event SET event_id = @COUNT:=@COUNT+1")
+        
+        cur.fetchall()
+
+        connection.commit()
+        connection.close()
+
+        return super().get(request, *args, **kwargs)
+
 class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+    def get(self, request, *args, **kwargs):
+        item = Event.objects.get(pk=kwargs['pk'])
+        item.event_views += 1
+        item.save()
+
+        return super().get(request, *args, **kwargs)
+
 
 def index(request):
     return render(request, "main/index.html")
