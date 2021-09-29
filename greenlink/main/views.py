@@ -14,7 +14,7 @@ from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSeri
 import json
 import bcrypt
 import jwt
-import random, secrets, string
+import random, secrets, string, datetime
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
@@ -75,6 +75,14 @@ class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get(request, *args, **kwargs)
 
+    def put(self, request, *args, **kwargs):
+        dt_now = datetime.datetime.now()
+        item = Notice.objects.get(pk=kwargs['pk'])
+        item.created_at = dt_now
+        item.save()
+
+        return super().put(request, *args, **kwargs)
+    
 class SearchEvent(APIView):
     def get(self, request):
         queryset = Event.objects.all()
@@ -273,5 +281,10 @@ class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
-        return super().delete(request, *args, **kwargs)
+    def put(self, request, *args, **kwargs):
+        dt_now = datetime.datetime.now()
+        item = Notice.objects.get(pk=kwargs['pk'])
+        item.created_at = dt_now
+        item.save()
+
+        return super().put(request, *args, **kwargs)
