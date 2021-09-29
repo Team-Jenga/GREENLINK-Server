@@ -14,7 +14,7 @@ from .serializers import EventDetailSerializer, MemberAdminSerializer, MemberSer
 import json
 import bcrypt
 import jwt
-import random
+import random, secrets, string
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
@@ -54,7 +54,6 @@ class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
 
 def index(request):
     return render(request, "main/index.html")
-
 
 class SignUp(View):
     @csrf_exempt
@@ -97,7 +96,6 @@ class SignUp(View):
 
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
           
 class SendAuth(APIView):
     def post(self, request):
@@ -114,7 +112,6 @@ class SendAuth(APIView):
 
         except KeyError:
             return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
-
 
 class SignIn(View):
     def post(self, request):
@@ -136,7 +133,6 @@ class SignIn(View):
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-
 class CheckDupleID(View):
     def post(self, request):
         data = json.loads(request.body)
@@ -151,7 +147,6 @@ class CheckDupleID(View):
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
-
 
 class CheckDupleNick(View):
     def post(self, request):
@@ -169,6 +164,50 @@ class CheckDupleNick(View):
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
 
+class FindID(APIView):
+    def post(self, request):
+        email = request.data['member_email']
+
+        try:
+            if MemberUser.objects.filter(member_user_email = email).exists():
+                member = MemberUser.objects.get(member_user_email = email)
+                return JsonResponse({"status": "200", "message" : str(member)}, status = 200)
+            else:
+                return JsonResponse({"status": "400", "message" : "email doesn't exist"}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+
+class FindPW(APIView):
+    def post(self, request):
+        member_id_ = request.data['member_id']
+
+        try:
+            if Member.objects.filter(member_id = member_id_).exists():
+                member_email = MemberUser.objects.get(member=member_id_).member_user_email
+
+                subject = 'Greenlink 회원님의 임시 비밀번호입니다.'
+                string_pool = string.ascii_letters + string.digits
+                while True:
+                    temp_password = ''.join(secrets.choice(string_pool) for i in range(10))
+                    if (any(c.islower() for c in temp_password)
+                    and any(c.isupper() for c in temp_password)
+                    and sum(c.isdigit() for c in temp_password) >= 3):
+                        break
+                message = str(temp_password)
+
+                Member.objects.filter(member_id = member_id_).update(
+                    member_pw = bcrypt.hashpw(message.encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8"),
+                )
+
+                mail = EmailMessage(subject, message, to=[member_email])
+                mail.send()
+                return JsonResponse({"status": "200", "message" : 'Success'}, status = 200)
+            else:
+                return JsonResponse({"status": "400", "message" : "ID doesn't exist"}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
 
 class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
