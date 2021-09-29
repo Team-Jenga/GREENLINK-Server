@@ -72,15 +72,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='EventDetail',
-            fields=[
-                ('event', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, primary_key=True, serialize=False, to='main.event')),
-            ],
-            options={
-                'db_table': 'event_detail',
-            },
-        ),
-        migrations.CreateModel(
             name='Favorite',
             fields=[
                 ('favorite_id', models.IntegerField(primary_key=True, serialize=False)),
