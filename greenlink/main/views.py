@@ -90,9 +90,8 @@ class SearchEvent(APIView):
         search_key = json.loads(request.body)['event_title'] # 검색어 가져오기
         if search_key: # 만약 검색어가 존재하면
             event_list = queryset.filter(event_title__icontains=search_key) # 해당 검색어를 포함한 queryset 가져오기
-            event_list=serializers.serialize('json',event_list)
 
-            return JsonResponse({'event_list': event_list}, status = 200)
+            return JsonResponse({'event_list': list(event_list.values())}, status = 200)
         else: 
             return JsonResponse({'message' :'failed'}, status = 400)
         
