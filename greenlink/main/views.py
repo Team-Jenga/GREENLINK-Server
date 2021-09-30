@@ -77,14 +77,12 @@ class ListEvent(generics.ListCreateAPIView):
         connection.commit()
         connection.close()
 
-        data = json.loads(request.body)        
         try:
-            if data['order_by'] == 'hits':
+            queryset = Event.objects.all().order_by('-event_id')
+            order_by = request.GET.get('order_by', None)
+            if order_by == 'hits':
                 queryset = Event.objects.all().order_by('-event_views')
-                return JsonResponse({'status' : 200, 'event_list': list(queryset.values())}, status = 200)
-            else:
-                queryset = Event.objects.all().order_by('-event_id')
-                return JsonResponse({'status' : 200, 'event_list': list(queryset.values())}, status = 200)
+            return JsonResponse({'status' : 200, 'event_list': list(queryset.values())}, status = 200)
         except KeyError:
             return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
