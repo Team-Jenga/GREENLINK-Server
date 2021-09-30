@@ -19,12 +19,7 @@ from django.views import View
 from django.http import HttpResponse, JsonResponse
 from greenlink.settings import SECRET_KEY
 from django.core.mail import EmailMessage
-
 from django.core import serializers
-
-class ListMember(generics.ListCreateAPIView):
-    queryset = Member.objects.all()
-    serializer_class = MemberSerializer
 
 class DetailMember(generics.RetrieveUpdateDestroyAPIView):
     queryset = Member.objects.all()
@@ -32,37 +27,43 @@ class DetailMember(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            member_info = Member.objects.all().filter(member_id = kwargs['pk'])
+            member_info = Member.objects.filter(member_id = kwargs['pk'])
             member_user_info = MemberUser.objects.all().filter(member = kwargs['pk'])
 
-            return JsonResponse({"status":200, 'info': list(member_info.values()) + list(member_user_info.values())}, status = 200)
+            return JsonResponse({"status": 200, 'info': list(member_info.values()) + list(member_user_info.values())}, status = 200)
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-
     def put(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        item = Member.objects.get(pk=kwargs['pk'])
-        item.member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
-        item.save()
+        try:
+            data = json.loads(request.body)
+            item = Member.objects.get(pk=kwargs['pk'])
+            item.member_nickname = data['member_nickname']
+            item.save()
+            item = MemberUser.objects.get(pk=kwargs['pk'])
+            item.member_user_birth = data['member_birth']
+            item.member_user_phone = data['member_phone']
+            item.member_user_email = data['member_email']
+            item.member_user_location = data['member_location']
+            item.member_user_num_of_family = data['member_num_of_family']
+            item.save()
 
-        return JsonResponse({"message" : "Success"},status = 200)
+            return JsonResponse({"status": 200, "message" : "Success"}, status = 200)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
 
-class ListUser(generics.ListCreateAPIView):
-    queryset = MemberUser.objects.all()
-    serializer_class = MemberUserSerializer
+class ChangePW(generics.RetrieveUpdateDestroyAPIView):
+    def put(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            item = Member.objects.get(pk=kwargs['pk'])
+            item.member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
+            item.save()
 
-class DetailUser(generics.RetrieveUpdateDestroyAPIView):
-    queryset = MemberUser.objects.all()
-    serializer_class = MemberUserSerializer
-
-class ListAdmin(generics.ListCreateAPIView):
-    queryset = MemberAdmin.objects.all()
-    serializer_class = MemberAdminSerializer
-
-class DetailAdmin(generics.RetrieveUpdateDestroyAPIView):
-    queryset = MemberAdmin.objects.all()
-    serializer_class = MemberAdminSerializer
+            return JsonResponse({"status": 200, "message" : "Success"}, status = 200)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+         
 
 class ListEvent(generics.ListCreateAPIView):
     queryset = Event.objects.all()
@@ -150,13 +151,13 @@ class SignUp(View):
                     member_admin_position = 1
                 ).save()
 
-            return JsonResponse({"message" : "Success"},status = 200)
+            return JsonResponse({"status": 200, "message" : "Success"},status = 200)
 
         except json.JSONDecodeError as e :
-            return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
+            return JsonResponse({"status": 400, 'message': f'Json_ERROR:{e}'}, status = 400)
 
         except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
 class SendAuth(APIView):
     def post(self, request):
@@ -169,10 +170,10 @@ class SendAuth(APIView):
             mail = EmailMessage(subject, message, to=[email])
             mail.send()
             
-            return JsonResponse({"status": "200", "message" : message}, status = 200)
+            return JsonResponse({"status": 200, "message" : message}, status = 200)
 
         except KeyError:
-            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
 class SignIn(View):
     def post(self, request):
@@ -185,11 +186,11 @@ class SignIn(View):
                 if bcrypt.checkpw(data['member_pw'].encode('UTF-8'), user.member_pw.encode('UTF-8')):
                     token = jwt.encode({'member_id' : user.member_id}, SECRET_KEY, 'HS256').decode('UTF-8')
 
-                    return JsonResponse({'token' : token,'auth' : user.member_auth}, status=200)
+                    return JsonResponse({"status": 200, 'token' : token,'auth' : user.member_auth}, status=200)
 
-                return JsonResponse({"message" : "Wrong Password"}, status = 400)
+                return JsonResponse({"status": 201, "message" : "Wrong Password"}, status = 201)
 
-            return JsonResponse({"message" : "Unexist ID"}, status = 400)
+            return JsonResponse({"status": 202, "message" : "Unexist ID"}, status = 202)
 
         except KeyError:
             JsonResponse({"message" : "Invalid Value"}, status = 400)
@@ -200,9 +201,9 @@ class CheckDupleID(View):
 
         try:
             if Member.objects.filter(member_id = data['member_id']).exists():
-                return JsonResponse({"status": "200", "message" : "false"},status = 200)
+                return JsonResponse({"status": 200, "message" : "false"},status = 200)
             else:
-                return JsonResponse({"status": "200", "message" : "true"},status = 200)  
+                return JsonResponse({"status": 200, "message" : "true"},status = 200)  
 
         except json.JSONDecodeError as e :
             return JsonResponse({'message': f'Json_ERROR:{e}'}, status = 400)
@@ -215,9 +216,9 @@ class CheckDupleNick(View):
 
         try:
             if Member.objects.filter(member_nickname = data['member_nickname']).exists():
-                return JsonResponse({"status": "200", "message" : "false"},status = 200)
+                return JsonResponse({"status": 200, "message" : "false"},status = 200)
             else:
-                return JsonResponse({"status": "200", "message" : "true"},status = 200)  
+                return JsonResponse({"status": 200, "message" : "true"},status = 200)  
                 
 
         except json.JSONDecodeError as e :
@@ -232,12 +233,12 @@ class FindID(APIView):
         try:
             if MemberUser.objects.filter(member_user_email = email).exists():
                 member = MemberUser.objects.get(member_user_email = email)
-                return JsonResponse({"status": "200", "message" : str(member)}, status = 200)
+                return JsonResponse({"status": 200, "message" : str(member)}, status = 200)
             else:
-                return JsonResponse({"status": "400", "message" : "email doesn't exist"}, status = 400)
+                return JsonResponse({"status": 201, "message" : "email doesn't exist"}, status = 201)
 
         except KeyError:
-            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
 class FindPW(APIView):
     def post(self, request):
@@ -263,12 +264,12 @@ class FindPW(APIView):
 
                 mail = EmailMessage(subject, message, to=[member_email])
                 mail.send()
-                return JsonResponse({"status": "200", "message" : 'Success'}, status = 200)
+                return JsonResponse({"status": 200, "message" : 'Success'}, status = 200)
             else:
-                return JsonResponse({"status": "400", "message" : "ID doesn't exist"}, status = 400)
+                return JsonResponse({"status": 201, "message" : "ID doesn't exist"}, status = 201)
 
         except KeyError:
-            return JsonResponse({"status": "400", "message" : "Invalid Value"}, status = 400)
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
 class ListNotice(generics.ListCreateAPIView):
     queryset = Notice.objects.all()
