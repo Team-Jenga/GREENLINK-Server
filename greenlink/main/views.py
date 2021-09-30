@@ -30,6 +30,24 @@ class DetailMember(generics.RetrieveUpdateDestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
 
+    def get(self, request, *args, **kwargs):
+        try:
+            member_info = Member.objects.all().filter(member_id = kwargs['pk'])
+            member_user_info = MemberUser.objects.all().filter(member = kwargs['pk'])
+
+            return JsonResponse({"status":200, 'info': list(member_info.values()) + list(member_user_info.values())}, status = 200)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        item = Member.objects.get(pk=kwargs['pk'])
+        item.member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
+        item.save()
+
+        return JsonResponse({"message" : "Success"},status = 200)
+
 class ListUser(generics.ListCreateAPIView):
     queryset = MemberUser.objects.all()
     serializer_class = MemberUserSerializer

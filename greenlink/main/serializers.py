@@ -4,8 +4,6 @@ from .models import Event, Favorite, Member, MemberAdmin, MemberUser, Notice
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'member_id',
-            'member_pw',
             'member_name',
             'member_nickname',
             'member_auth',
