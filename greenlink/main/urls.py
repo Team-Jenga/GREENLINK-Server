@@ -7,8 +7,6 @@ urlpatterns = [
     path('member/<str:pk>', views.DetailMember.as_view()),
     path('member/<str:pk>/changepw', views.ChangePW.as_view()),
 
-    path('eventlist', views.ListEvent.as_view()),
-
     path('signup', SignUp.as_view()),
     path('signin', SignIn.as_view()),
     path('sendauth', SendAuth.as_view()),
@@ -23,5 +21,7 @@ urlpatterns = [
 
     path('event', views.ListEvent.as_view()),
     path('event/<int:pk>/',views.DetailEvent.as_view()),
-    path('eventsearch',views.SearchEvent.as_view())
+    path('eventsearch',views.SearchEvent.as_view()),
+
+    path('favorites', views.ListFavorite.as_view())
 ]

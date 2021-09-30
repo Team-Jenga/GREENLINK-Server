@@ -8,8 +8,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Member, MemberAdmin, MemberUser, Event, Notice
-from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, NoticeSerializer
+from .models import Member, MemberAdmin, MemberUser, Event, Favorite, Notice
+from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, FavoriteSerializer, NoticeSerializer
 
 import json
 import bcrypt
@@ -114,6 +114,25 @@ class SearchEvent(APIView):
         else: 
             return JsonResponse({'message' :'failed'}, status = 400)
         
+class ListFavorite(generics.CreateAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+    def get(self, request):
+        data = json.loads(request.body)
+        
+        try:
+            response = []
+            favorite_instance = list(Favorite.objects.filter(member_id = data['member']).values())
+            
+            for instance in favorite_instance:
+                event_instance = list(Event.objects.filter(event_id = instance['event_id']).values())[0]
+                response.append(event_instance)
+
+            return JsonResponse({"status":200, 'data': response}, status = 200)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
 def index(request):
     return render(request, "main/index.html")
 
