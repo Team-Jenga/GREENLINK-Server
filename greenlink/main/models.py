@@ -73,7 +73,7 @@ class Event(models.Model):
 
 
 class Favorite(models.Model):
-    favorite_id = models.IntegerField(primary_key=True)
+    favorite_id = models.AutoField(primary_key=True)
     member = models.ForeignKey(Member, models.DO_NOTHING)
     event = models.ForeignKey(Event, models.DO_NOTHING)
 

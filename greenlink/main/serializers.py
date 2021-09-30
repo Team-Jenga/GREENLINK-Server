@@ -52,8 +52,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'favorite_id',
-            'member_id',
-            'event_id',
+            'member',
+            'event',
         )
         model = Favorite
 
