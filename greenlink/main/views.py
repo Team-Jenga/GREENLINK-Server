@@ -65,6 +65,9 @@ class ChangePW(generics.RetrieveUpdateDestroyAPIView):
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
          
 class ListEvent(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
     def get(self, request, *args, **kwargs):
         cur = connection.cursor()
 
