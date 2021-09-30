@@ -64,11 +64,7 @@ class ChangePW(generics.RetrieveUpdateDestroyAPIView):
         except KeyError:
             return JsonResponse({"message" : "Invalid Value"}, status = 400)
          
-
 class ListEvent(generics.ListCreateAPIView):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
     def get(self, request, *args, **kwargs):
         cur = connection.cursor()
 
@@ -81,7 +77,16 @@ class ListEvent(generics.ListCreateAPIView):
         connection.commit()
         connection.close()
 
-        return super().get(request, *args, **kwargs)
+        data = json.loads(request.body)        
+        try:
+            if data['order_by'] == 'hits':
+                queryset = Event.objects.all().order_by('-event_views')
+                return JsonResponse({'status' : 200, 'event_list': list(queryset.values())}, status = 200)
+            else:
+                queryset = Event.objects.all().order_by('-event_id')
+                return JsonResponse({'status' : 200, 'event_list': list(queryset.values())}, status = 200)
+        except KeyError:
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
 
 class DetailEvent(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
