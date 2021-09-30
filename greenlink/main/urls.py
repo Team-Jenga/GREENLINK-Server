@@ -5,7 +5,7 @@ from .views import CheckDupleID, CheckDupleNick, FindID, FindPW, ListEvent, Sear
 
 urlpatterns = [
     path('member/', views.ListMember.as_view()),
-    path('member/<int:pk>/', views.DetailMember.as_view()),
+    path('member/<str:pk>', views.DetailMember.as_view()),
 
     path('user/', views.ListUser.as_view()),
     path('user/<int:pk>/', views.DetailUser.as_view()),

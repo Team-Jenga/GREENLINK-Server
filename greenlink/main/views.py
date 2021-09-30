@@ -30,6 +30,24 @@ class DetailMember(generics.RetrieveUpdateDestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
 
+    def get(self, request, *args, **kwargs):
+        try:
+            member_info = Member.objects.all().filter(member_id = kwargs['pk'])
+            member_user_info = MemberUser.objects.all().filter(member = kwargs['pk'])
+
+            return JsonResponse({"status":200, 'info': list(member_info.values()) + list(member_user_info.values())}, status = 200)
+        except KeyError:
+            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        item = Member.objects.get(pk=kwargs['pk'])
+        item.member_pw = bcrypt.hashpw(data["member_pw"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
+        item.save()
+
+        return JsonResponse({"message" : "Success"},status = 200)
+
 class ListUser(generics.ListCreateAPIView):
     queryset = MemberUser.objects.all()
     serializer_class = MemberUserSerializer
@@ -90,9 +108,8 @@ class SearchEvent(APIView):
         search_key = json.loads(request.body)['event_title'] # 검색어 가져오기
         if search_key: # 만약 검색어가 존재하면
             event_list = queryset.filter(event_title__icontains=search_key) # 해당 검색어를 포함한 queryset 가져오기
-            event_list=serializers.serialize('json',event_list)
 
-            return JsonResponse({'event_list': event_list}, status = 200)
+            return JsonResponse({'event_list': list(event_list.values())}, status = 200)
         else: 
             return JsonResponse({'message' :'failed'}, status = 400)
         
