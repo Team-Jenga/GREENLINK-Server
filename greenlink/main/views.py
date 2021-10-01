@@ -1,25 +1,21 @@
 from django.db import connection
-from django.db.models import query
-from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Member, MemberAdmin, MemberUser, Event, Favorite, Notice
-from .serializers import MemberAdminSerializer, MemberSerializer, MemberUserSerializer, EventSerializer, FavoriteSerializer, NoticeSerializer
+from .serializers import MemberSerializer, EventSerializer, FavoriteSerializer, NoticeSerializer
 
 import json
 import bcrypt
 import jwt
 import random, secrets, string, datetime
 from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from greenlink.settings import SECRET_KEY
 from django.core.mail import EmailMessage
-from django.core import serializers
 
 class DetailMember(generics.RetrieveUpdateDestroyAPIView):
     queryset = Member.objects.all()
@@ -112,32 +108,32 @@ class SearchEvent(APIView):
     def get(self, request):
         queryset = Event.objects.all()
         
-        search_key = json.loads(request.body)['event_title'] # 검색어 가져오기
-        if search_key: # 만약 검색어가 존재하면
-            event_list = queryset.filter(event_title__icontains=search_key) # 해당 검색어를 포함한 queryset 가져오기
+        search_key = request.GET.get('search_key', None)
+        if search_key:
+            event_list = queryset.filter(event_title__icontains = search_key)
 
-            return JsonResponse({'event_list': list(event_list.values())}, status = 200)
+            return JsonResponse({'status' : 200, 'event_list': list(event_list.values())}, status = 200)
         else: 
-            return JsonResponse({'message' :'failed'}, status = 400)
-        
+            return JsonResponse({'status': 400, 'message' :'Search failed'}, status = 400)
+
+
 class ListFavorite(generics.CreateAPIView):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
 
     def get(self, request):
-        data = json.loads(request.body)
-        
         try:
             response = []
-            favorite_instance = list(Favorite.objects.filter(member_id = data['member']).values())
+            member = request.GET.get('member', None)
+            favorite_instance = list(Favorite.objects.filter(member_id = member).values())
             
             for instance in favorite_instance:
                 event_instance = list(Event.objects.filter(event_id = instance['event_id']).values())[0]
                 response.append(event_instance)
 
-            return JsonResponse({"status":200, 'data': response}, status = 200)
+            return JsonResponse({'status' : 200, 'event_list': response}, status = 200)
         except KeyError:
-            return JsonResponse({"message" : "Invalid Value"}, status = 400)
+            return JsonResponse({'status' : 400, 'message' : "Invalid Value"}, status = 400)
 
 def index(request):
     return render(request, "main/index.html")
@@ -302,12 +298,11 @@ class ListNotice(generics.ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
         cur = connection.cursor()
-
-        result = cur.execute("ALTER TABLE notice AUTO_INCREMENT=1")
-        result = cur.execute("SET @COUNT = 0")
-        result = cur.execute("UPDATE notice SET id = @COUNT:=@COUNT+1")
         
-        queryset = cur.fetchall()
+        cur.execute("ALTER TABLE notice AUTO_INCREMENT=1")
+        cur.execute("SET @COUNT = 0")
+        cur.execute("UPDATE notice SET id = @COUNT:=@COUNT+1")
+        cur.fetchall()
 
         connection.commit()
         connection.close()
