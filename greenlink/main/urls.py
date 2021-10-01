@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import CheckDupleID, CheckDupleNick, FindID, FindPW, ListEvent, SearchEvent, SendAuth, SignUp, SignIn
+from .views import CheckDupleID, CheckDupleNick, FindID, FindPW, SendAuth, SignUp, SignIn
 
 urlpatterns = [
     path('member/<str:pk>', views.DetailMember.as_view()),
