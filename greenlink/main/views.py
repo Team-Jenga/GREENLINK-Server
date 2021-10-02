@@ -330,7 +330,7 @@ class ListNotice(generics.ListCreateAPIView):
         
         try:
             queryset = Notice.objects.all().order_by('-id')
-            return JsonResponse({'status' : 200, 'notice_list': list(queryset.values())}, status = 200)
+            return JsonResponse({'status' : 200, 'data': list(queryset.values())}, status = 200)
         except KeyError:
             return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
       
