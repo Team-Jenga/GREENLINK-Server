@@ -123,6 +123,17 @@ class ListFavorite(generics.CreateAPIView):
 
     def get(self, request):
         try:
+            cur = connection.cursor()
+
+            cur.execute("ALTER TABLE favorite AUTO_INCREMENT=1")
+            cur.execute("SET @COUNT = 0")
+            cur.execute("UPDATE favorite SET id = @COUNT:=@COUNT+1")
+            
+            cur.fetchall()
+
+            connection.commit()
+            connection.close()
+
             response = []
             member = request.GET.get('member', None)
             favorite_instance = list(Favorite.objects.filter(member_id = member).values())
@@ -316,7 +327,12 @@ class ListNotice(generics.ListCreateAPIView):
 
         connection.commit()
         connection.close()
-        return super().get(request, *args, **kwargs)
+        
+        try:
+            queryset = Notice.objects.all().order_by('-notice_id')
+            return JsonResponse({'status' : 200, 'notice_list': list(queryset.values())}, status = 200)
+        except KeyError:
+            return JsonResponse({"status": 400, "message" : "Invalid Value"}, status = 400)
       
 class DetailNotice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notice.objects.all()
