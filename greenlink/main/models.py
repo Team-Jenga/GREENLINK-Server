@@ -73,12 +73,12 @@ class Event(models.Model):
 
 
 class Favorite(models.Model):
-    favorite_id = models.AutoField(primary_key=True)
-    member = models.ForeignKey(Member, models.DO_NOTHING)
-    event = models.ForeignKey(Event, models.DO_NOTHING)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'favorite'
+        unique_together=(('member','event'),)
 
 
 class Notice(models.Model):
