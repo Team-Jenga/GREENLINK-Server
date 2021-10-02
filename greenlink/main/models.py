@@ -61,7 +61,7 @@ class Event(models.Model):
     event_management = models.CharField(max_length=45, blank=True, null=True)
     event_period_start = models.DateField(blank=True, null=True)
     event_period_end = models.DateField(blank=True, null=True)
-    event_url = models.CharField(max_length=45, blank=True, null=True)
+    event_url = models.TextField(blank=True, null=True)
     event_image_url = models.TextField(blank=True, null=True)
     event_content = models.TextField(blank=True, null=True)
 
