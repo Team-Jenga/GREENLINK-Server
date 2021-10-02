@@ -158,10 +158,10 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
-    'http://ec2-3-34-185-96.ap-northeast-2.compute.amazonaws.com/'
+    'http://ec2-52-78-76-124.ap-northeast-2.compute.amazonaws.com/'
 )
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'http://ec2-3-34-185-96.ap-northeast-2.compute.amazonaws.com/'
+    'http://ec2-52-78-76-124.ap-northeast-2.compute.amazonaws.com/'
 ]
