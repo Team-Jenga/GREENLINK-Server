@@ -146,11 +146,9 @@ class ListFavorite(generics.CreateAPIView):
         except KeyError:
             return JsonResponse({'status' : 400, 'message' : "Invalid Value"}, status = 400)
 
-    def delete(self, request):
-        data = json.loads(request.body)
-
+    def delete(self, request, *args, **kwargs):
         try:
-            Favorite.objects.filter(member_id = data['member'], event_id = data['event']).delete()
+            Favorite.objects.filter(member_id = kwargs['member'], event_id = kwargs['event']).delete()
 
             return JsonResponse({'status' : 200, 'message' : "Completely Delete"}, status = 200)
         except:

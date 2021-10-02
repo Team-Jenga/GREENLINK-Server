@@ -24,5 +24,6 @@ urlpatterns = [
     path('event/<int:pk>/',views.DetailEvent.as_view()),
     path('eventsearch',views.SearchEvent.as_view()),
 
-    path('favorites', views.ListFavorite.as_view())
+    path('favorites', views.ListFavorite.as_view()),
+    path('favorites/<str:member>/<int:event>', views.ListFavorite.as_view())
 ]
